@@ -44,12 +44,20 @@ public class ScriptEngineBuildProcessorServer
 	public BuildContext call() throws InterruptedException, Exception
 	{
 		log.debug("Entering build processor server.");
+		
+		// TODO: This needs to be fixed properly after checking usecases
+		// Add null checks to fail safely
+		if (resultsSummaryManager == null || agentManager == null || buildLoggerManager == null) {
+			log.error("ResultsSummaryManager or AgentManager or BuildLoggerManager is null. Skipping script execution.");
+			return buildContext;
+		}
+		
 		ResultsSummary resultsSummary = resultsSummaryManager.getResultsSummary(buildContext.getPlanResultKey());
 		BuildAgent buildAgent = agentManager.getAgent(resultsSummary.getBuildAgentId());
 		BuildLogger buildLogger = buildLoggerManager.getLogger(buildContext.getPlanResultKey());
 		if( buildAgent != null && ! AgentType.LOCAL.equals(buildAgent.getType()))
 		{
-			for(TaskDefinition taskDefinition : buildContext.getTaskDefinitions() )
+			for(TaskDefinition taskDefinition : buildContext.getBuildDefinition().getTaskDefinitions() )
 			{
 				if( taskDefinition.isEnabled() && ScriptEngineConstants.PLUGIN_KEY.equals(taskDefinition.getPluginKey()))
 				{
