@@ -15,6 +15,9 @@
 package com.trusolve.atlassian.bamboo.plugins.scriptengine.tasks;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -22,7 +25,7 @@ import java.util.Set;
 import javax.script.ScriptEngineFactory;
 import javax.script.ScriptEngineManager;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -33,20 +36,20 @@ import com.atlassian.bamboo.task.AbstractTaskConfigurator;
 import com.atlassian.bamboo.task.TaskDefinition;
 import com.atlassian.bamboo.utils.error.ErrorCollection;
 import com.atlassian.core.util.PairType;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Lists;
+// import com.google.common.collect.ImmutableSet;
+// import com.google.common.collect.Lists;
 import com.trusolve.atlassian.bamboo.plugins.scriptengine.ScriptEngineConstants;
 
 public class ScriptEngineTaskConfigurator extends AbstractTaskConfigurator
 {
 	private static final Logger log = LoggerFactory.getLogger(ScriptEngineTaskConfigurator.class);
 	
-	private static final Set<String> FIELDS = ImmutableSet.of(
+	private static final Set<String> FIELDS = Collections.unmodifiableSet(new HashSet<>(Arrays.asList(
 		ScriptEngineConstants.SCRIPTENGINE_RUNONSERVER,
 		ScriptEngineConstants.SCRIPTENGINE_SCRIPTTYPE, 
 		ScriptEngineConstants.SCRIPTENGINE_SCRIPTBODY, 
 		ScriptEngineConstants.SCRIPTENGINE_SCRIPTLOCATION, 
-		ScriptEngineConstants.SCRIPTENGINE_SCRIPTFILE);
+		ScriptEngineConstants.SCRIPTENGINE_SCRIPTFILE)));
 	
 	@Override
 	public void populateContextForCreate(@NotNull Map<String, Object> context)
@@ -62,14 +65,20 @@ public class ScriptEngineTaskConfigurator extends AbstractTaskConfigurator
 	public void populateContextForView(@NotNull Map<String, Object> context, @NotNull TaskDefinition taskDefinition)
 	{
 		super.populateContextForView(context, taskDefinition);
-		taskConfiguratorHelper.populateContextWithConfiguration(context, taskDefinition, FIELDS);
+		// Manually populate due to injection issue
+		for (String field : FIELDS) {
+			context.put(field, taskDefinition.getConfiguration().get(field));
+		}
 	}
 
 	@Override
 	public void populateContextForEdit(@NotNull Map<String, Object> context, @NotNull TaskDefinition taskDefinition)
 	{
 		super.populateContextForEdit(context, taskDefinition);
-		taskConfiguratorHelper.populateContextWithConfiguration(context, taskDefinition, FIELDS);
+		// Manually populate due to injection issue
+		for (String field : FIELDS) {
+			context.put(field, taskDefinition.getConfiguration().get(field));
+		}
 		context.put(ScriptEngineConstants.SCRIPTENGINE_LOCATIONTYPES, getLocationTypes());
 		context.put(ScriptEngineConstants.SCRIPTENGINE_SCRIPTTYPES, getScriptEngines());
 	}
@@ -78,7 +87,7 @@ public class ScriptEngineTaskConfigurator extends AbstractTaskConfigurator
 	{
 		PairType file = new PairType("FILE", "File");
 		PairType inline = new PairType("INLINE", "Inline");
-		return Lists.newArrayList(new PairType[] { inline, file });
+		return Arrays.asList(inline, file);
 	}
 
 	public List<PairType> getScriptEngines()
@@ -100,7 +109,12 @@ public class ScriptEngineTaskConfigurator extends AbstractTaskConfigurator
 	public Map<String, String> generateTaskConfigMap(@NotNull ActionParametersMap params, @Nullable TaskDefinition previousTaskDefinition)
 	{
 		final Map<String, String> config = super.generateTaskConfigMap(params, previousTaskDefinition);
-		taskConfiguratorHelper.populateTaskConfigMapWithActionParameters(config, params, FIELDS);
+		for (String field : FIELDS) {
+			String value = params.getString(field);
+			if (value != null) {
+				config.put(field, value);
+			}
+		}
 		return config;
 	}
 

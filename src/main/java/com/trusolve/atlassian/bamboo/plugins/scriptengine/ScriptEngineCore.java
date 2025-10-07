@@ -24,6 +24,8 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
+import org.openjdk.nashorn.api.scripting.NashornScriptEngineFactory;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -244,11 +246,27 @@ abstract public class ScriptEngineCore
 
 	protected void executeScript(String script, String scriptLanguage, ScriptContext scriptContext, boolean isFile) throws FileNotFoundException, ScriptException
 	{
-		ScriptEngineManager factory = new ScriptEngineManager();
-		ScriptEngine engine = factory.getEngineByName(scriptLanguage);
-		if (engine == null)
-		{
-			throw new ScriptException("Script engine " + scriptLanguage + " not found.");
+		ScriptEngine engine = null;
+		
+		// Creating Nashorn engine directly first
+		if ("js".equals(scriptLanguage) || "javascript".equals(scriptLanguage) || "nashorn".equals(scriptLanguage)) {
+			try {
+				NashornScriptEngineFactory factory = new NashornScriptEngineFactory();
+				engine = factory.getScriptEngine();
+				log.info("Created Nashorn engine directly for script language: " + scriptLanguage);
+			} catch (Exception e) {
+				log.warn("Failed to create Nashorn engine directly: " + e.getMessage());
+			}
+		}
+		
+		// Fallback to ScriptEngineManager if script type is not a flavour of JS, ATM there is no support for other types
+		if (engine == null) {
+			ScriptEngineManager manager = new ScriptEngineManager(this.getClass().getClassLoader());
+			engine = manager.getEngineByName(scriptLanguage);
+			
+			if (engine == null) {
+				throw new ScriptException("Script engine '" + scriptLanguage + "' not found.");
+			}
 		}
 		else
 		{
@@ -273,10 +291,12 @@ abstract public class ScriptEngineCore
 
 			if (isFile)
 			{
+				log.info("Executing script from file: {}", script);
 				engine.eval(new FileReader(script));
 			}
 			else
 			{
+				log.info("Executing inline script of {} characters", script.length());
 				engine.eval(script);
 			}
 		}

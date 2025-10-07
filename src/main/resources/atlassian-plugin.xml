@@ -23,7 +23,7 @@
 	<bambooEventListener key="scriptEngineEventListener" name="Label Expiration Event Listener" class="com.trusolve.atlassian.bamboo.plugins.scriptengine.ScriptEngineEventListener">
 		<description>Optionally executes a script on the server at the completion of a deployment.  This is a hack because Atlassian hasn't made the BuildProcessorServer work with Deployments.</description>
 	</bambooEventListener>
-	<component-import key="transactionTemplate" name="Hibernate Transaction Template" interface="com.atlassian.sal.api.transaction.TransactionTemplate">
+	<!-- <component-import key="transactionTemplate" name="Hibernate Transaction Template" interface="com.atlassian.sal.api.transaction.TransactionTemplate">
 		<description>hibernate transaction</description>
-	</component-import>
+	</component-import> -->
 </atlassian-plugin>
