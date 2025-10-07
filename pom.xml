@@ -18,9 +18,6 @@
     <packaging>atlassian-plugin</packaging>
 
     <properties>
-        <!-- <bamboo.version>5.9.7</bamboo.version>
-        <bamboo.data.version>5.9.7</bamboo.data.version>
-        <amps.version>5.1.18</amps.version> -->
         <bamboo.version>10.2.0</bamboo.version>
         <bamboo.data.version>10.2.0</bamboo.data.version>
         <amps.version>9.4.0</amps.version>
@@ -161,65 +158,6 @@
             </plugins>
         </pluginManagement>
     </build>
-
-    <!-- <build>
-        <plugins>
-            <plugin>
-                <groupId>com.atlassian.maven.plugins</groupId>
-                <artifactId>maven-bamboo-plugin</artifactId>
-                <version>${amps.version}</version>
-                <extensions>true</extensions>
-                <configuration>
-                    <productVersion>${bamboo.version}</productVersion>
-                    <productDataVersion>${bamboo.data.version}</productDataVersion>
-                </configuration>
-            </plugin>
-          
-            <plugin>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>17</source>
-                    <target>17</target>
-                </configuration>
-            </plugin>
-        </plugins>
-        <pluginManagement>
-        	<plugins>
-        		<plugin>
-        			<groupId>org.eclipse.m2e</groupId>
-        			<artifactId>lifecycle-mapping</artifactId>
-        			<version>1.0.0</version>
-        			<configuration>
-        				<lifecycleMappingMetadata>
-        					<pluginExecutions>
-        						<pluginExecution>
-        							<pluginExecutionFilter>
-        								<groupId>
-        									com.atlassian.maven.plugins
-        								</groupId>
-        								<artifactId>
-        									maven-bamboo-plugin
-        								</artifactId>
-        								<versionRange>
-        									[5.1.18,)
-        								</versionRange>
-        								<goals>
-        									<goal>
-        										compress-resources
-        									</goal>
-        								</goals>
-        							</pluginExecutionFilter>
-        							<action>
-        								<ignore></ignore>
-        							</action>
-        						</pluginExecution>
-        					</pluginExecutions>
-        				</lifecycleMappingMetadata>
-        			</configuration>
-        		</plugin>
-        	</plugins>
-        </pluginManagement>
-    </build> -->
     <artifactId>ScriptEngine</artifactId>
     <url>https://github.com/prestongilchrist/ScriptEngineTask</url>
     <scm>
